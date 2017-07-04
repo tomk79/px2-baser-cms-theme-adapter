@@ -180,79 +180,23 @@ class stubs_BcBaser{
 		return '';
 	}
 
-/**
- * タイトルタグを取得する
- *
- * ページタイトルと直属のカテゴリ名が同じ場合は、ページ名を省略する
- * version 3.0.10 より第2引数 $categoryTitleOn は、 $options にまとめられました。
- * 後方互換のために第2引数に配列型以外を指定された場合は、 $categoryTitleOn として取り扱います。
- *
- * @param string $separator 区切り文字
- * @param array $options
- *  `categoryTitleOn` カテゴリタイトルを表示するかどうか boolean で指定 (初期値 : null)
- *  `tag` (boolean) false でタグを削除するかどうか (初期値 : true)
- *  `allowableTags` tagが falseの場合、削除しないタグを指定できる。詳しくは、php strip_tags のドキュメントを参考してください。 (初期値 : '')
- * @return string メタタグ用のタイトルを返す
- */
+	/**
+	 * タイトルタグを取得する
+	 *
+	 * ページタイトルと直属のカテゴリ名が同じ場合は、ページ名を省略する
+	 * version 3.0.10 より第2引数 $categoryTitleOn は、 $options にまとめられました。
+	 * 後方互換のために第2引数に配列型以外を指定された場合は、 $categoryTitleOn として取り扱います。
+	 *
+	 * @param string $separator 区切り文字
+	 * @param array $options
+	 *  `categoryTitleOn` カテゴリタイトルを表示するかどうか boolean で指定 (初期値 : null)
+	 *  `tag` (boolean) false でタグを削除するかどうか (初期値 : true)
+	 *  `allowableTags` tagが falseの場合、削除しないタグを指定できる。詳しくは、php strip_tags のドキュメントを参考してください。 (初期値 : '')
+	 * @return string メタタグ用のタイトルを返す
+	 */
 	public function getTitle($separator = '｜', $options = array()) {
-		if(! is_array($options)){
-			$categoryTitleOn = $options;
-			unset($options);
-			$options['categoryTitleOn'] = $categoryTitleOn ;
-		}
-
-		$options = array_merge(array(
-			'categoryTitleOn' => null,
-			'tag' => true,
-			'allowableTags' => ''
-		), $options);
-
-		$title = array();
-
-		if($this->isHome()) {
-			$homeTitle = $this->_View->get('homeTitle');
-			if($homeTitle) {
-				if(!$options['tag']){
-					$title[] = strip_tags($homeTitle, $options['allowableTags']);
-				} else {
-					$title[] = $homeTitle;
-				}
-			}
-		} else {
-			$crumbs = $this->getCrumbs($options['categoryTitleOn']);
-			if ($crumbs) {
-				$crumbs = array_reverse($crumbs);
-				foreach ($crumbs as $key => $crumb) {
-					if ($this->BcArray->first($crumbs, $key) && isset($crumbs[$key + 1])) {
-						if ($crumbs[$key + 1]['name'] == $crumb['name']) {
-							continue;
-						}
-					}
-					if(!$options['tag']){
-						$title[] = strip_tags($crumb['name'], $options['allowableTags']);
-					} else {
-						$title[] = $crumb['name'];
-					}
-				}
-			}
-		}
-
-		// サイトタイトルを追加
-		$siteName = '';
-		if(!empty($this->request->params['Site']['title'])) {
-			$siteName = $this->request->params['Site']['title'];
-		} elseif (!empty($this->siteConfig['name'])) {
-			$siteName = $this->siteConfig['name'];
-		}
-		if ($siteName) {
-			if(!$options['tag']){
-				$title[] = strip_tags($siteName, $options['allowableTags']);
-			} else {
-				$title[] = $siteName;
-			}
-		}
-
-		return implode($separator, $title);
+		$rtn = $this->px->site()->get_current_page_info('title_full');
+		return $rtn;
 	}
 
 	/**
@@ -422,77 +366,19 @@ class stubs_BcBaser{
 		return parent::url($url, $full, $sessionId);
 	}
 
-/**
- * エレメントテンプレートのレンダリング結果を取得する
- *
- * @param string $name エレメント名
- * @param array $data エレメントで参照するデータ
- * @param array $options オプションのパラメータ
- *  `subDir` (boolean) エレメントのパスについてプレフィックスによるサブディレクトリを追加するかどうか
- * ※ その他のパラメータについては、View::element() を参照
- * @return string エレメントのレンダリング結果
- */
+	/**
+	 * エレメントテンプレートのレンダリング結果を取得する
+	 *
+	 * @param string $name エレメント名
+	 * @param array $data エレメントで参照するデータ
+	 * @param array $options オプションのパラメータ
+	 *  `subDir` (boolean) エレメントのパスについてプレフィックスによるサブディレクトリを追加するかどうか
+	 * ※ その他のパラメータについては、View::element() を参照
+	 * @return string エレメントのレンダリング結果
+	 */
 	public function getElement($name, $data = array(), $options = array()) {
-		$options = array_merge(array(
-			'subDir' => true
-		), $options);
-
-		if (isset($options['plugin']) && !$options['plugin']) {
-			unset($options['plugin']);
-		}
-
-		/*** beforeElement ***/
-		$event = $this->dispatchEvent('beforeElement', array(
-			'name' => $name,
-			'data' => $data,
-			'options' => $options
-			), array('layer' => 'View', 'class' => '', 'plugin' => ''));
-		if ($event !== false) {
-			$options = ($event->result === null || $event->result === true) ? $event->data['options'] : $event->result;
-		}
-
-		/*** Controller.beforeElement ***/
-		$event = $this->dispatchEvent('beforeElement', array(
-			'name' => $name,
-			'data' => $data,
-			'options' => $options
-			), array('layer' => 'View', 'class' => $this->_View->name));
-		if ($event !== false) {
-			$options = ($event->result === null || $event->result === true) ? $event->data['options'] : $event->result;
-		}
-
-		if ($options['subDir'] === false) {
-			if (!$this->_subDir && $this->_View->subDir) {
-				$this->_subDir = $this->_View->subDir;
-			}
-			$this->_View->subDir = null;
-		} else {
-			if ($this->_subDir) {
-				$this->_View->subDir = $this->_subDir;
-			}
-		}
-
-		$out = $this->_View->element($name, $data, $options);
-
-		/*** afterElement ***/
-		$event = $this->dispatchEvent('afterElement', array(
-			'name' => $name,
-			'out' => $out
-			), array('layer' => 'View', 'class' => '', 'plugin' => ''));
-		if ($event !== false) {
-			$out = ($event->result === null || $event->result === true) ? $event->data['out'] : $event->result;
-		}
-
-		/*** Controller.afterElement ***/
-		$event = $this->dispatchEvent('afterElement', array(
-			'name' => $name,
-			'out' => $out
-			), array('layer' => 'View', 'class' => $this->_View->name));
-		if ($event !== false) {
-			$out = ($event->result === null || $event->result === true) ? $event->data['out'] : $event->result;
-		}
-
-		return $out;
+		// TODO: エレメントテンプレートとは何？
+		return '';
 	}
 
 /**
@@ -1146,135 +1032,8 @@ class stubs_BcBaser{
  * @return string
  */
 	public function getContentsName($detail = false, $options = array()) {
-		$options = array_merge(array(
-			'home' => 'Home',
-			'default' => 'Default',
-			'error' => 'Error',
-			'underscore' => false), $options);
-
-		$home = $options['home'];
-		$default = $options['default'];
-		$error = $options['error'];
-		$underscore = $options['underscore'];
-
-		$prefix = '';
-		$plugin = '';
-		$controller = '';
-		$action = '';
-		$pass = array();
-		$url0 = '';
-		$url1 = '';
-		$url2 = '';
-		$aryUrl = array();
-
-		if (!empty($this->request->params['prefix'])) {
-			$prefix = h($this->request->params['prefix']);
-		}
-		if (!empty($this->request->params['plugin'])) {
-			$plugin = h($this->request->params['plugin']);
-		}
-		$controller = h($this->request->params['controller']);
-		if ($prefix) {
-			$action = str_replace($prefix . '_', '', h($this->request->params['action']));
-		} else {
-			$action = h($this->request->params['action']);
-		}
-		if (!empty($this->request->params['pass'])) {
-			foreach ($this->request->params['pass'] as $key => $value) {
-				$pass[$key] = h($value);
-			}
-		}
-
-		$url = explode('/', h($this->request->url));
-
-		if (@$this->request->params['Site']['alias']) {
-			array_shift($url);
-		}
-
-		if (isset($url[0])) {
-			$url0 = $url[0];
-		}
-		if (isset($url[1])) {
-			$url1 = $url[1];
-		}
-		if (isset($url[2])) {
-			$url2 = $url[2];
-		}
-
-		// 固定ページの場合
-		if ($controller == 'pages' && $action == 'display') {
-
-			if (strpos($pass[0], 'pages/') !== false) {
-				$pageUrl = str_replace('pages/', '', $pass[0]);
-			} else {
-				if (empty($pass)) {
-					$pageUrl = h($this->request->url);
-				} else {
-					$pageUrl = implode('/', $pass);
-				}
-			}
-
-			$sitePrefix = $this->getSitePrefix();
-			if($sitePrefix) {
-				$pageUrl = preg_replace('/^' . preg_quote($sitePrefix, '/') . '\//', '', $pageUrl);
-			}
-
-			if (preg_match('/\/$/', $pageUrl)) {
-				$pageUrl .= 'index';
-			}
-			$pageUrl = preg_replace('/\.html$/', '', $pageUrl);
-			$pageUrl = preg_replace('/^\//', '', $pageUrl);
-			$aryUrl = explode('/', $pageUrl);
-		} else {
-
-			// プラグインルーティングの場合
-			if ((($url1 == '' && in_array($action, array('index', 'mobile_index', 'smartphone_index'))) || ($url1 == $action)) && $url2 != $action && $plugin) {
-				$prefix = '';
-				$plugin = '';
-				$controller = $url0;
-			}
-			if ($plugin) {
-				$controller = $plugin . '_' . $controller;
-			}
-			if ($prefix) {
-				$controller = $prefix . '_' . $controller;
-			}
-			if ($controller) {
-				$aryUrl[] = $controller;
-			}
-			if ($action) {
-				$aryUrl[] = $action;
-			}
-			if ($pass) {
-				$aryUrl = array_merge($aryUrl, $pass);
-			}
-		}
-
-		if ($this->_View->name == 'CakeError') {
-			$contentsName = $error;
-		} elseif (count($aryUrl) >= 2) {
-			if (!$detail) {
-				$contentsName = $aryUrl[0];
-			} else {
-				$contentsName = implode('_', $aryUrl);
-			}
-		} elseif (count($aryUrl) == 1 && $aryUrl[0] == 'index') {
-			$contentsName = $home;
-		} else {
-			if (!$detail) {
-				$contentsName = $default;
-			} else {
-				$contentsName = $aryUrl[0];
-			}
-		}
-
-		if ($underscore) {
-			$contentsName = Inflector::underscore($contentsName);
-		} else {
-			$contentsName = Inflector::camelize($contentsName);
-		}
-
-		return $contentsName;
+		$rtn = $this->px->site()->get_current_page_info('id');
+		return $rtn;
 	}
 
 	public function getSitePrefix() {

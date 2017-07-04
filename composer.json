@@ -34,7 +34,8 @@
             "php/theme.php",
             "php/processor.php",
             "php/stubs/BcBaser.php",
-            "php/stubs/BcHtml.php"
+            "php/stubs/BcHtml.php",
+            "php/utils/funcs.php"
         ]
     },
     "extra": {
