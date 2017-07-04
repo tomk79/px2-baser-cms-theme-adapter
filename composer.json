@@ -33,7 +33,8 @@
         "files": [
             "php/theme.php",
             "php/processor.php",
-            "php/BcBaserStub.php"
+            "php/stubs/BcBaser.php",
+            "php/stubs/BcHtml.php"
         ]
     },
     "extra": {

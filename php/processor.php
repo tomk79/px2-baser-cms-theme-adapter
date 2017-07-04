@@ -25,7 +25,7 @@ class processor{
 	public function __construct( $px, $path_theme_layout_file ){
 		$this->px = $px;
 
-		$this->BcBaser = new BcBaserStub( $this->px );
+		$this->BcBaser = new stubs_BcBaser( $this->px );
 
 		ob_start();
 		include( $path_theme_layout_file );
