@@ -149,12 +149,13 @@ class theme{
 			$path_theme_layout_file = $this->px->fs()->get_realpath( $this->path_theme_dir.'Layouts/'.$this->page['layout'].'.php' );
 		}
 		if( !$px->fs()->is_file( $path_theme_layout_file ) ){
-			$path_theme_layout_file = $this->px->fs()->get_realpath( __DIR__.'/default/default.php' );
+			$this->path_theme_dir = __DIR__.'/default/';
+			$this->page['layout'] = 'default';
+			$path_theme_layout_file = $this->px->fs()->get_realpath( $this->path_theme_dir.'Layouts/default.php' );
 		}
 
-		$processor = new processor( $this->px, $path_theme_layout_file );
-
-		return $processor->get_finalized_html_code();
+		$processor = new processor( $this->px, $this->path_theme_dir);
+		return $processor->bind_template('Layouts/'.$this->page['layout'].'.php');
 	}
 
 	/**

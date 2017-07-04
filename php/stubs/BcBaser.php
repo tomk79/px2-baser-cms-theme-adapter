@@ -9,7 +9,14 @@ namespace tomk79\pickles2\baserCmsThemeAdapter;
  */
 class stubs_BcBaser{
 	/** Pickles 2 Object */
-	private $px = '';
+	private $px;
+
+	/** class `processor` Instance */
+	private $processor;
+
+	/** Stubs */
+	private $BcHtml;
+	private $BcPage;
 
 /**
  * サイト基本設定データ
@@ -73,9 +80,11 @@ class stubs_BcBaser{
 	 *
 	 * @param object $px Pickles 2 Object
 	 */
-	public function __construct( $px ){
+	public function __construct( $px, $processor ){
 		$this->px = $px;
+		$this->processor = $processor;
 		$this->BcHtml = new stubs_BcHtml($px);
+		$this->BcPage = new stubs_BcPage($px);
 	} // __construct()
 
 
@@ -363,7 +372,7 @@ class stubs_BcBaser{
  * @return string URL
  */
 	public function getUrl($url = null, $full = false, $sessionId = true) {
-		return parent::url($url, $full, $sessionId);
+		return $this->px->href($url);
 	}
 
 	/**
@@ -377,8 +386,8 @@ class stubs_BcBaser{
 	 * @return string エレメントのレンダリング結果
 	 */
 	public function getElement($name, $data = array(), $options = array()) {
-		// TODO: エレメントテンプレートとは何？
-		return '';
+		$rtn = $this->processor->bind_template('Elements/'.$name.'.php');
+		return $rtn;
 	}
 
 /**
@@ -414,21 +423,21 @@ class stubs_BcBaser{
 
 		$out = $this->getElement('header', $data, $options);
 
-		/*** header ***/
-		$event = $this->dispatchEvent('header', array(
-			'out' => $out
-			), array('layer' => 'View', 'class' => '', 'plugin' => ''));
-		if ($event !== false) {
-			$out = ($event->result === null || $event->result === true) ? $event->data['out'] : $event->result;
-		}
-
-		/*** Controller.header ***/
-		$event = $this->dispatchEvent('header', array(
-			'out' => $out
-			), array('layer' => 'View', 'class' => $this->_View->name));
-		if ($event !== false) {
-			$out = ($event->result === null || $event->result === true) ? $event->data['out'] : $event->result;
-		}
+		// /*** header ***/
+		// $event = $this->dispatchEvent('header', array(
+		// 	'out' => $out
+		// 	), array('layer' => 'View', 'class' => '', 'plugin' => ''));
+		// if ($event !== false) {
+		// 	$out = ($event->result === null || $event->result === true) ? $event->data['out'] : $event->result;
+		// }
+		//
+		// /*** Controller.header ***/
+		// $event = $this->dispatchEvent('header', array(
+		// 	'out' => $out
+		// 	), array('layer' => 'View', 'class' => $this->_View->name));
+		// if ($event !== false) {
+		// 	$out = ($event->result === null || $event->result === true) ? $event->data['out'] : $event->result;
+		// }
 		echo $out;
 	}
 
@@ -498,19 +507,7 @@ class stubs_BcBaser{
  * @return void
  */
 	public function content() {
-		/*** contentHeader ***/
-		$this->dispatchEvent('contentHeader', null, array('layer' => 'View', 'class' => '', 'plugin' => ''));
-
-		/*** Controller.contentHeader ***/
-		$this->dispatchEvent('contentHeader', null, array('layer' => 'View', 'class' => $this->_View->name));
-
-		echo $this->_View->fetch('content');
-
-		/*** contentFooter ***/
-		$event = $this->dispatchEvent('contentFooter', null, array('layer' => 'View', 'class' => '', 'plugin' => ''));
-
-		/*** Controller.contentFooter ***/
-		$event = $this->dispatchEvent('contentFooter', null, array('layer' => 'View', 'class' => $this->_View->name));
+		$this->px->bowl()->get_clean();
 	}
 
 /**
@@ -522,11 +519,11 @@ class stubs_BcBaser{
  * @return void
  */
 	public function flash($key = 'flash') {
-		if ($this->Session->check('Message.' . $key)) {
-			echo '<div id="MessageBox">';
-			echo $this->Flash->render($key, ['escape' => false]);
-			echo '</div>';
-		}
+		// if ($this->Session->check('Message.' . $key)) {
+		// 	echo '<div id="MessageBox">';
+		// 	echo $this->Flash->render($key, ['escape' => false]);
+		// 	echo '</div>';
+		// }
 	}
 
 	/**
@@ -733,7 +730,7 @@ class stubs_BcBaser{
  * @return string
  */
 	public function getLink($title, $url = null, $options = array(), $confirmMessage = false) {
-		$adminAlias = Configure::read('BcAuthPrefix.admin.alias');
+		// $adminAlias = Configure::read('BcAuthPrefix.admin.alias');
 
 		if (!is_array($options)) {
 			$options = array($options);
@@ -746,22 +743,6 @@ class stubs_BcBaser{
 			'ssl' => false
 			), $options);
 
-		/*** beforeGetLink ***/
-		$event = $this->dispatchEvent('beforeGetLink', array(
-			'title' => $title,
-			'url' => $url,
-			'options' => $options,
-			'confirmMessage' => $confirmMessage
-			), array('class' => 'Html', 'plugin' => ''));
-		if ($event !== false) {
-			$options = ($event->result === null || $event->result === true) ? $event->data['options'] : $event->result;
-		}
-
-		if ($options['prefix']) {
-			if (!empty($this->request->params['prefix']) && is_array($url)) {
-				$url[$this->request->params['prefix']] = true;
-			}
-		}
 		$forceTitle = $options['forceTitle'];
 		$ssl = $options['ssl'];
 
@@ -769,90 +750,14 @@ class stubs_BcBaser{
 		unset($options['forceTitle']);
 		unset($options['ssl']);
 
-		// 管理システムメニュー対策
-		// プレフィックスが変更された場合も正常動作させる為
-		// TODO メニューが廃止になったら削除
-		if (!is_array($url)) {
-			$prefixes = Configure::read('Routing.prefixes');
-			$url = preg_replace('/^\/' . $adminAlias . '\//', '/' . $prefixes[0] . '/', $url);
-		}
-
 		$_url = $this->getUrl($url);
-		$_url = preg_replace('/^' . preg_quote($this->request->base, '/') . '\//', '/', $_url);
 		$enabled = true;
-
-		if ($options == false) {
-			$enabled = false;
-		}
-
-		// 認証チェック
-		if (isset($this->_Permission) && !empty($this->_View->viewVars['user']['user_group_id'])) {
-			$userGroupId = $this->_View->viewVars['user']['user_group_id'];
-			if (!$this->_Permission->check($_url, $userGroupId)) {
-				$enabled = false;
-			}
-		}
-
-		// コンテンツ公開チェック
-		// TODO 統合コンテンツ管理のチェックに変更する
-//		if (isset($this->_Page) && empty($this->request->params['admin'])) {
-//			$adminPrefix = Configure::read('Routing.prefixes.0');
-//			if (isset($this->_Page) && !preg_match('/^\/' . $adminPrefix . '/', $_url)) {
-//				if ($this->_Page->isPageUrl($_url) && !$this->_Page->checkPublish($_url)) {
-//					$enabled = false;
-//				}
-//			}
-//		}
-
-		if (!$enabled) {
-			if ($forceTitle) {
-				return "<span>$title</span>";
-			} else {
-				return '';
-			}
-		}
-
-		// 現在SSLのURLの場合、プロトコル指定(フルパス)で取得以外
-		// //(スラッシュスラッシュ)から始まるSSL、非SSL共有URLも除外する
-		if (($this->isSSL() || $ssl)
-			&& !(preg_match('/^(javascript|https?|ftp|tel):/', $_url))
-			&& !(strpos($_url, '//') === 0)) {
-
-			$_url = preg_replace("/^\//", "", $_url);
-			if (preg_match('/^' . $adminAlias . '\//', $_url)) {
-				$admin = true;
-			} else {
-				$admin = false;
-			}
-			if (Configure::read('App.baseUrl')) {
-				$_url = 'index.php/' . $_url;
-			}
-			if (!$ssl && !$admin) {
-				$url = Configure::read('BcEnv.siteUrl') . $_url;
-			} else {
-				$sslUrl = Configure::read('BcEnv.sslUrl');
-				if($sslUrl) {
-					$url = $sslUrl . $_url;
-				} else {
-					$url = '/' . $_url;
-				}
-			}
-		}
 
 		if (!$options) {
 			$options = array();
 		}
 
 		$out = $this->BcHtml->link($title, $url, $options, $confirmMessage);
-
-		/*** afterGetLink ***/
-		$event = $this->dispatchEvent('afterGetLink', array(
-			'url' => $url,
-			'out' => $out
-			), array('class' => 'Html', 'plugin' => ''));
-		if ($event !== false) {
-			$out = ($event->result === null || $event->result === true) ? $event->data['out'] : $event->result;
-		}
 
 		return $out;
 	}
@@ -1361,29 +1266,15 @@ EOD;
  * @return string
  */
 	public function getGlobalMenu($level = 1, $options = array()) {
-		$Content = ClassRegistry::init('Content');
 		$siteId = 0;
-		if(!empty($this->request->params['Content']['site_id'])) {
-			$siteId = $this->request->params['Content']['site_id'];
-		}
-		$siteRoot = $Content->getSiteRoot($siteId);
-		$id = $siteRoot['Content']['id'];
-		$currentId = null;
-		if(!empty($this->request->params['Content']['id'])) {
-			$currentId = $this->request->params['Content']['id'];
-		}
+		$siteRoot = null;
+		$id = '';
+		$currentId = $this->px->site()->get_current_page_info('id');
 		$options = array_merge([
-			'tree' => $this->BcContents->getTree($id, $level),
+			'tree' => $this->px->site()->get_global_menu(),
 			'currentId' => $currentId,
 			'data' => []
 		], $options);
-		if (empty($_SESSION['Auth'][Configure::read('BcAuthPrefix.admin.sessionKey')])) {
-			$options = array_merge($options, [
-					'cache' => [
-						'time' => Configure::read('BcCache.duration'),
-						'key' => $id]]
-			);
-		}
 		$data = array_merge([
 			'tree' => $options['tree'],
 			'currentId' => $options['currentId']
@@ -1775,116 +1666,122 @@ END_FLASH;
  * @return string $tag テーマ画像のHTMLタグ
  */
 	protected function _getThemeImage($name, $options = array()) {
-		$ThemeConfig = ClassRegistry::init('ThemeConfig');
-		$data = $ThemeConfig->findExpanded();
+		// var_dump($options);
+		// TODO: 画像リソースを公開キャッシュに複製して、imgタグを生成する
+		$img = '<img />';
+		return $img;
 
-		$url = $imgPath = $uploadUrl = $uploadThumbUrl = $originUrl = '';
-		$thumbSuffix = '_thumb';
-		$dir = WWW_ROOT . 'files' . DS . 'theme_configs' . DS;
-		$themeDir = $path = getViewPath() . 'img' . DS;
-		$num = '';
-		if (!empty($options['num'])) {
-			$num = '_' . $options['num'];
-		}
-		$options = array_merge(array(
-			'thumb' => false,
-			'class' => '',
-			'popup' => false,
-			'alt' => $data[$name . '_alt' . $num],
-			'link' => $data[$name . '_link' . $num],
-			'maxWidth' => '',
-			'maxHeight' => '',
-			'width' => '',
-			'height' => ''
-			), $options);
-		$name = $name . $num;
 
-		if ($data[$name]) {
-			$pathinfo = pathinfo($data[$name]);
-			$uploadPath = $dir . $data[$name];
-			$uploadThumbPath = $dir . $pathinfo['filename'] . $thumbSuffix . '.' . $pathinfo['extension'];
-			$uploadUrl = '/files/theme_configs/' . $data[$name];
-			$uploadThumbUrl = '/files/theme_configs/' . $pathinfo['filename'] . $thumbSuffix . '.' . $pathinfo['extension'];
-		}
-
-		if ($data[$name]) {
-			if (!$options['thumb']) {
-				if (file_exists($uploadPath)) {
-					$imgPath = $uploadPath;
-					$url = $uploadUrl;
-				}
-			} else {
-				if (file_exists($uploadThumbPath)) {
-					$imgPath = $uploadThumbPath;
-					$url = $uploadThumbUrl;
-				}
-			}
-			$originUrl = $uploadUrl;
-		}
-
-		if (!$url) {
-			$exts = array('png', 'jpg', 'gif');
-			foreach ($exts as $ext) {
-				if (file_exists($themeDir . $name . '.' . $ext)) {
-					$url = '/theme/' . $this->siteConfig['theme'] . '/img/' . $name . '.' . $ext;
-					$imgPath = $themeDir . $name . '.' . $ext;
-					$originUrl = $url;
-				}
-			}
-		}
-
-		if (!$url) {
-			return '';
-		}
-
-		$imgOptions = array();
-		if ($options['class']) {
-			$imgOptions['class'] = $options['class'];
-		}
-		if ($options['alt']) {
-			$imgOptions['alt'] = $options['alt'];
-		}
-		if ($options['maxWidth'] || $options['maxHeight']) {
-			$imginfo = getimagesize($imgPath);
-			$widthRate = $heightRate = 0;
-			if ($options['maxWidth']) {
-				$widthRate = $imginfo[0] / $options['maxWidth'];
-			}
-			if ($options['maxHeight']) {
-				$heightRate = $imginfo[1] / $options['maxHeight'];
-			}
-			if ($widthRate > $heightRate) {
-				if ($options['maxWidth'] && $imginfo[0] > $options['maxWidth']) {
-					$imgOptions['width'] = $options['maxWidth'];
-				}
-			} else {
-				if ($options['maxHeight'] && ($imginfo[1] > $options['maxHeight'])) {
-					$imgOptions['height'] = $options['maxHeight'];
-				}
-			}
-		}
-		if ($options['width']) {
-			$imgOptions['width'] = $options['width'];
-		}
-		if ($options['height']) {
-			$imgOptions['height'] = $options['height'];
-		}
-
-		$tag = $this->getImg($url, $imgOptions);
-		if ($options['link'] || $options['popup']) {
-			$linkOptions = array();
-			if ($options['popup']) {
-				$linkOptions['rel'] = 'colorbox';
-				$link = $originUrl;
-			} elseif ($options['link']) {
-				$link = $options['link'];
-			}
-			if ($options['alt']) {
-				$linkOptions['title'] = $options['alt'];
-			}
-			$tag = $this->getLink($tag, $link, $linkOptions);
-		}
-		return $tag;
+		// $ThemeConfig = ClassRegistry::init('ThemeConfig');
+		// $data = $ThemeConfig->findExpanded();
+		//
+		// $url = $imgPath = $uploadUrl = $uploadThumbUrl = $originUrl = '';
+		// $thumbSuffix = '_thumb';
+		// $dir = WWW_ROOT . 'files' . DS . 'theme_configs' . DS;
+		// $themeDir = $path = getViewPath() . 'img' . DS;
+		// $num = '';
+		// if (!empty($options['num'])) {
+		// 	$num = '_' . $options['num'];
+		// }
+		// $options = array_merge(array(
+		// 	'thumb' => false,
+		// 	'class' => '',
+		// 	'popup' => false,
+		// 	'alt' => $data[$name . '_alt' . $num],
+		// 	'link' => $data[$name . '_link' . $num],
+		// 	'maxWidth' => '',
+		// 	'maxHeight' => '',
+		// 	'width' => '',
+		// 	'height' => ''
+		// 	), $options);
+		// $name = $name . $num;
+		//
+		// if ($data[$name]) {
+		// 	$pathinfo = pathinfo($data[$name]);
+		// 	$uploadPath = $dir . $data[$name];
+		// 	$uploadThumbPath = $dir . $pathinfo['filename'] . $thumbSuffix . '.' . $pathinfo['extension'];
+		// 	$uploadUrl = '/files/theme_configs/' . $data[$name];
+		// 	$uploadThumbUrl = '/files/theme_configs/' . $pathinfo['filename'] . $thumbSuffix . '.' . $pathinfo['extension'];
+		// }
+		//
+		// if ($data[$name]) {
+		// 	if (!$options['thumb']) {
+		// 		if (file_exists($uploadPath)) {
+		// 			$imgPath = $uploadPath;
+		// 			$url = $uploadUrl;
+		// 		}
+		// 	} else {
+		// 		if (file_exists($uploadThumbPath)) {
+		// 			$imgPath = $uploadThumbPath;
+		// 			$url = $uploadThumbUrl;
+		// 		}
+		// 	}
+		// 	$originUrl = $uploadUrl;
+		// }
+		//
+		// if (!$url) {
+		// 	$exts = array('png', 'jpg', 'gif');
+		// 	foreach ($exts as $ext) {
+		// 		if (file_exists($themeDir . $name . '.' . $ext)) {
+		// 			$url = '/theme/' . $this->siteConfig['theme'] . '/img/' . $name . '.' . $ext;
+		// 			$imgPath = $themeDir . $name . '.' . $ext;
+		// 			$originUrl = $url;
+		// 		}
+		// 	}
+		// }
+		//
+		// if (!$url) {
+		// 	return '';
+		// }
+		//
+		// $imgOptions = array();
+		// if ($options['class']) {
+		// 	$imgOptions['class'] = $options['class'];
+		// }
+		// if ($options['alt']) {
+		// 	$imgOptions['alt'] = $options['alt'];
+		// }
+		// if ($options['maxWidth'] || $options['maxHeight']) {
+		// 	$imginfo = getimagesize($imgPath);
+		// 	$widthRate = $heightRate = 0;
+		// 	if ($options['maxWidth']) {
+		// 		$widthRate = $imginfo[0] / $options['maxWidth'];
+		// 	}
+		// 	if ($options['maxHeight']) {
+		// 		$heightRate = $imginfo[1] / $options['maxHeight'];
+		// 	}
+		// 	if ($widthRate > $heightRate) {
+		// 		if ($options['maxWidth'] && $imginfo[0] > $options['maxWidth']) {
+		// 			$imgOptions['width'] = $options['maxWidth'];
+		// 		}
+		// 	} else {
+		// 		if ($options['maxHeight'] && ($imginfo[1] > $options['maxHeight'])) {
+		// 			$imgOptions['height'] = $options['maxHeight'];
+		// 		}
+		// 	}
+		// }
+		// if ($options['width']) {
+		// 	$imgOptions['width'] = $options['width'];
+		// }
+		// if ($options['height']) {
+		// 	$imgOptions['height'] = $options['height'];
+		// }
+		//
+		// $tag = $this->getImg($url, $imgOptions);
+		// if ($options['link'] || $options['popup']) {
+		// 	$linkOptions = array();
+		// 	if ($options['popup']) {
+		// 		$linkOptions['rel'] = 'colorbox';
+		// 		$link = $originUrl;
+		// 	} elseif ($options['link']) {
+		// 		$link = $options['link'];
+		// 	}
+		// 	if ($options['alt']) {
+		// 		$linkOptions['title'] = $options['alt'];
+		// 	}
+		// 	$tag = $this->getLink($tag, $link, $linkOptions);
+		// }
+		// return $tag;
 	}
 
 /**
