@@ -222,9 +222,9 @@ return call_user_func( function(){
 		'theme'=>'tomk79\pickles2\baserCmsThemeAdapter\theme::exec('.json_encode([
 			'param_theme_switch'=>'THEME',
 			'cookie_theme_switch'=>'THEME',
-			'path_theme_collection'=>'./px-files/themes/',
+			'path_theme_collection'=>'./px-files/bc_themes/',
 			'attr_bowl_name_by'=>'data-contents-area',
-			'default_theme_id'=>'pickles2'
+			'default_theme_id'=>'bc_sample'
 		]).')' ,
 
 		// Apache互換のSSIの記述を解決する

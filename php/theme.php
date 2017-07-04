@@ -48,7 +48,7 @@ class theme{
 		$this->px = $px;
 
 		$this->conf = new \stdClass();
-		$this->conf->path_theme_collection = $this->px->get_path_homedir().'themes'.DIRECTORY_SEPARATOR;
+		$this->conf->path_theme_collection = $this->px->get_path_homedir().'bc_themes'.DIRECTORY_SEPARATOR;
 		if( strlen(@$options->path_theme_collection) ){
 			$this->conf->path_theme_collection = $this->px->fs()->get_realpath($options->path_theme_collection.DIRECTORY_SEPARATOR);
 		}
@@ -143,21 +143,18 @@ class theme{
 	 * @return string テーマを実行した結果のHTMLコード
 	 */
 	private function bind( $px ){
-		$path_theme_layout_file = $this->px->fs()->get_realpath( $this->path_theme_dir.$this->page['layout'].'.html' );
+		$path_theme_layout_file = $this->px->fs()->get_realpath( $this->path_theme_dir.'Layouts/'.$this->page['layout'].'.php' );
 		if( !$px->fs()->is_file( $path_theme_layout_file ) ){
 			$this->page['layout'] = 'default';
-			$path_theme_layout_file = $this->px->fs()->get_realpath( $this->path_theme_dir.$this->page['layout'].'.html' );
+			$path_theme_layout_file = $this->px->fs()->get_realpath( $this->path_theme_dir.'Layouts/'.$this->page['layout'].'.php' );
 		}
 		if( !$px->fs()->is_file( $path_theme_layout_file ) ){
-			$path_theme_layout_file = $this->px->fs()->get_realpath( __DIR__.'/default/default.html' );
+			$path_theme_layout_file = $this->px->fs()->get_realpath( __DIR__.'/default/default.php' );
 		}
 
-		$theme = new template_utility( $px, $this );
+		$processor = new processor( $this->px, $path_theme_layout_file );
 
-		ob_start();
-		include( $path_theme_layout_file );
-		$src = ob_get_clean();
-		return $src;
+		return $processor->get_finalized_html_code();
 	}
 
 	/**

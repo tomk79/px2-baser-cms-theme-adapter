@@ -31,8 +31,9 @@
     },
     "autoload": {
         "files": [
-            "php/main.php",
-            "php/template_utility.php"
+            "php/theme.php",
+            "php/processor.php",
+            "php/BcBaserStub.php"
         ]
     },
     "extra": {
