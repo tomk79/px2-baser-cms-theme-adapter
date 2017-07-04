@@ -15,6 +15,7 @@ class processor{
 	private $BcBaser;
 	private $BcHtml;
 	private $BcPage;
+	private $BcArray;
 
 	/** テーマフォルダ */
 	private $path_theme_dir;
@@ -41,6 +42,7 @@ class processor{
 		$this->BcBaser = new stubs_BcBaser( $this->px, $this );
 		$this->BcHtml = new stubs_BcHtml($this->px);
 		$this->BcPage = new stubs_BcPage($this->px);
+		$this->BcArray = new stubs_BcArray($this->px);
 
 		ob_start();
 		include( $this->path_theme_dir.$path_theme_layout_file );

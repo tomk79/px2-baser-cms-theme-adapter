@@ -457,21 +457,6 @@ class stubs_BcBaser{
 
 		$out = $this->getElement('footer', $data, $options);
 
-		/*** footer ***/
-		$event = $this->dispatchEvent('footer', array(
-			'out' => $out
-			), array('layer' => 'View', 'class' => '', 'plugin' => ''));
-		if ($event) {
-			$out = ($event->result === null || $event->result === true) ? $event->data['out'] : $event->result;
-		}
-
-		/*** Controller.footer ***/
-		$event = $this->dispatchEvent('footer', array(
-			'out' => $out
-			), array('layer' => 'View', 'class' => $this->_View->name));
-		if ($event) {
-			$out = ($event->result === null || $event->result === true) ? $event->data['out'] : $event->result;
-		}
 		echo $out;
 	}
 
@@ -507,7 +492,8 @@ class stubs_BcBaser{
  * @return void
  */
 	public function content() {
-		$this->px->bowl()->get_clean();
+		echo '<h1>'.preg_replace('/\r\n|\r|\n/s', '<br />', htmlspecialchars($this->px->site()->get_current_page_info('title_h1')) ).'</h1>'."\n";
+		echo $this->px->bowl()->get_clean();
 	}
 
 /**
@@ -552,35 +538,6 @@ class stubs_BcBaser{
  * @return void
  */
 	public function func() {
-
-		$currentPrefix = $this->_View->get('currentPrefix');
-		$authPrefix = Configure::read('BcAuthPrefix.' . $currentPrefix);
-		$toolbar = true;
-		if ($authPrefix && isset($authPrefix['toolbar'])) {
-			$toolbar = $authPrefix['toolbar'];
-		}
-
-		// ### ツールバーエレメント出力
-		// 《表示条件》
-		// - プレビューでない
-		// - auth prefix の設定で、利用するように定義されている
-		// - モバイルでない
-		// - Query String で、toolbar=false に定義されていない
-		// - 管理画面でない
-		// - ログインしている
-		if (empty($this->_View->viewVars['preview']) && $toolbar && !@$this->request->params['Site']['device']) {
-			if (!isset($this->request->query['toolbar']) || ($this->request->query['toolbar'] !== false && $this->request->query['toolbar'] !== 'false')) {
-				if (empty($this->request->params['admin']) && !empty($this->_View->viewVars['user'])) {
-					$this->element('admin/toolbar', array(), array('subDir' => false));
-				}
-			}
-		}
-
-		// デバッグ
-		if (Configure::read('debug') >= 2) {
-			$this->element('template_dump', array(), array('subDir' => false));
-			$this->element('sql_dump', array(), array('subDir' => false));
-		}
 	}
 
 /**

@@ -90,11 +90,13 @@ class theme{
 		}
 
 		// テーマのリソースファイルをキャッシュに複製する
-		if( is_dir($this->path_theme_dir.'/theme_files/') ){
-			$this->px->fs()->copy_r(
-				$this->path_theme_dir.'/theme_files/' ,
-				$this->px->realpath_plugin_files('/')
-			);
+		foreach( array('img','css','js','files') as $resource_dir_name ){
+			if( is_dir($this->path_theme_dir.'/'.$resource_dir_name.'/') ){
+				$this->px->fs()->copy_r(
+					$this->path_theme_dir.'/'.$resource_dir_name.'/' ,
+					$this->px->realpath_plugin_files('/'.$resource_dir_name.'/')
+				);
+			}
 		}
 	} // __construct()
 

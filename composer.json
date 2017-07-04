@@ -34,6 +34,7 @@
             "php/theme.php",
             "php/processor.php",
             "php/stubs/BcBaser.php",
+            "php/stubs/BcArray.php",
             "php/stubs/BcHtml.php",
             "php/stubs/BcPage.php",
             "php/utils/funcs.php"
