@@ -22,6 +22,7 @@ class processor{
 
 	/** ????? */
 	private $name;
+	private $viewPath;
 
 	/**
 	 * constructor

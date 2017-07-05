@@ -154,9 +154,13 @@ class stubs_BcHtml{
 		$rtn = array();
 		$ary_breadcrumb = $this->px->site()->get_breadcrumb_array();
 		foreach($ary_breadcrumb as $pid){
+			if(!strlen($pid)){
+				continue; // トップページはパンくず配列に含めない模様
+			}
 			$crumb = array();
 			$crumb[0] = $this->px->site()->get_page_info($pid, 'title_label');
 			$crumb[1] = $this->px->href($pid);
+			$crumb[1] = preg_replace('/^'.preg_quote($this->px->get_path_controot(), '/').'/', '/', $crumb[1]);
 			array_push($rtn, $crumb);
 		}
 		$crumb = array();

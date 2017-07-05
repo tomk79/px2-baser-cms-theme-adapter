@@ -223,8 +223,17 @@ class stubs_BcBaser{
 	 * 後方互換を考慮する必要がある。
 	 */
 	public function getCrumbs($categoryTitleOn = null) {
-		$ary_breadcrumb = $this->px->site()->get_breadcrumb_array();
-		return $ary_breadcrumb;
+		$rtn = array();
+		$ary_breadcrumb = $this->BcHtml->getStripCrumbs($categoryTitleOn = null);
+		foreach( $ary_breadcrumb as $page ){
+			$row = array();
+			$row['name'] = $page[0];
+			if( count($page) >= 2 ){
+				$row['url'] = $page[1];
+			}
+			array_push($rtn, $row);
+		}
+		return $rtn;
 	}
 
 	/**
@@ -294,21 +303,8 @@ class stubs_BcBaser{
  * @return bool
  */
 	public function isHome() {
-		if(empty($this->request->params['Site'])) {
-			return false;
-		}
-		$site = BcSite::findCurrent(true);
-		if (!$site->alias || $site->sameMainUrl || $site->useSubDomain) {
-			return (
-				$this->request->url == false ||
-				$this->request->url == 'index'
-			);
-		} else {
-			return (
-				$this->request->url == $site->alias . '/' ||
-				$this->request->url == $site->alias . '/index'
-			);
-		}
+		$pid = $this->px->site()->get_current_page_info('id');
+		return (strlen($pid) ? false : true);
 	}
 
 /**
@@ -1623,7 +1619,6 @@ END_FLASH;
  * @return string $tag テーマ画像のHTMLタグ
  */
 	protected function _getThemeImage($name, $options = array()) {
-		// var_dump($options);
 		// TODO: 画像リソースを公開キャッシュに複製して、imgタグを生成する
 		$img = '<img />';
 		return $img;
