@@ -18,6 +18,7 @@ class stubs_BcBaser{
 	private $BcHtml;
 	private $BcPage;
 	private $BcXml;
+	private $BcContents;
 
 /**
  * サイト基本設定データ
@@ -87,6 +88,7 @@ class stubs_BcBaser{
 		$this->BcHtml = new stubs_BcHtml($px, $processor);
 		$this->BcPage = new stubs_BcPage($px, $processor);
 		$this->BcXml = new stubs_BcXml($px, $processor);
+		$this->BcContents = new stubs_BcContents($px, $processor);
 
 		$this->siteConfig = array();
 		$this->siteConfig['theme'] = $processor->get_theme_id();
@@ -1155,23 +1157,17 @@ EOD;
  * @return string コンテンツメニュー
  */
 	public function getContentsMenu($id = null, $level = null, $currentId = null) {
-		if(!$id) {
-			$Content = ClassRegistry::init('Content');
-			$siteRoot = $Content->getSiteRoot($this->request->params['Content']['site_id']);
-			$id = $siteRoot['Content']['id'];
+		if(!is_string($id)) {
+			$id = '';
+		}
+		if(!is_string($currentId)) {
+			$currentId = $this->px->site()->get_current_page_info('id');
 		}
 		$params = [
 			'tree' => $this->BcContents->getTree($id, $level),
 			'currentId' => $currentId
 		];
 		$params['tree'] = $this->_unsetIndexInContentsMenu($params['tree']);
-		if (empty($_SESSION['Auth'][Configure::read('BcAuthPrefix.admin.sessionKey')])) {
-			$params = array_merge($params, [
-					'cache' => [
-						'time' => Configure::read('BcCache.duration'),
-						'key' => $id]]
-			);
-		}
 		return $this->getElement('contents_menu', $params);
 	}
 
@@ -1183,16 +1179,8 @@ EOD;
  * @return mixed コンテンツデータ
  */
 	public function _unsetIndexInContentsMenu($contents, $children = false) {
-		if($contents) {
-			foreach($contents as $key => $content) {
-				if($children && $content['Content']['type'] != 'ContentFolder' && $content['Content']['name'] == 'index') {
-					unset($contents[$key]);
-				}
-				if($content['children']) {
-					$contents[$key]['children'] = $this->_unsetIndexInContentsMenu($content['children'], true);
-				}
-			}
-		}
+		// Pickles 2 では除外の必要がなさそうなので、
+		// そのまま返します。
 		return $contents;
 	}
 
@@ -2160,7 +2148,7 @@ END_FLASH;
 		} else {
 			$rel = 'apple-touch-icon-precomposed';
 		}
-		echo '<link rel="' . $rel . '" href="' . Router::url('/' . $fileName, true) . '" />';
+		echo '<link rel="' . $rel . '" href="' . $this->px->href('/' . $fileName) . '" />';
 	}
 
 /**
