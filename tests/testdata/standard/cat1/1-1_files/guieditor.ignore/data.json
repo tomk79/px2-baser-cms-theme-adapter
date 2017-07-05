@@ -1,0 +1,53 @@
+{
+ "bowl": {
+  "main": {
+   "modId": "_sys/root",
+   "fields": {
+    "main": [
+     {
+      "modId": "PlainHTMLElements:PlainHTML/MultiText",
+      "fields": {
+       "main": {
+        "src": "# test1-1\n\nbaserCMS では、h1 はコンテンツに記載する習わしのようです。\n",
+        "editor": "markdown"
+       }
+      },
+      "anchor": "",
+      "dec": ""
+     },
+     {
+      "modId": "FESS:units/cols2",
+      "fields": {
+       "column1": [
+        {
+         "modId": "PlainHTMLElements:PlainHTML/MultiText",
+         "fields": {
+          "main": {
+           "src": "## テストページ\n\nPickles 2 アプリの brocoli-html-editor を用い、markdown で記述。\n",
+           "editor": "markdown"
+          }
+         },
+         "anchor": "",
+         "dec": ""
+        }
+       ],
+       "column2": [
+        {
+         "modId": "PlainHTMLElements:PlainHTML/MultiText",
+         "fields": {
+          "main": {
+           "src": "## テストページ\n\nPickles 2 アプリの brocoli-html-editor を用い、markdown で記述。\n",
+           "editor": "markdown"
+          }
+         },
+         "anchor": "",
+         "dec": ""
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ }
+}

@@ -302,7 +302,10 @@ return call_user_func( function(){
 	$conf->plugins->px2dt = new stdClass;
 
 	/** broccoliモジュールセットの登録 */
-	$conf->plugins->px2dt->paths_module_template = array();
+	$conf->plugins->px2dt->paths_module_template = array(
+		"PlainHTMLElements" => "../../../vendor/broccoli-html-editor/broccoli-module-plain-html-elements/modules/",
+		"FESS" => "../../../vendor/broccoli-html-editor/broccoli-module-fess/modules/"
+	);
 
 	/** コンテンツエリアを識別するセレクタ(複数の要素がマッチしてもよい) */
 	$conf->plugins->px2dt->contents_area_selector = '[data-contents-area]';

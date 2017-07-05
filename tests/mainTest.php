@@ -24,7 +24,7 @@ class mainTest extends PHPUnit_Framework_TestCase{
 			'-u', 'Mozilla/0.5',
 			'/index.html' ,
 		] );
-		var_dump($indexHtml);
+		// var_dump($indexHtml);
 
 
 		// 後始末
