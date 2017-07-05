@@ -391,7 +391,7 @@ class stubs_BcBaser{
 	 * @return string エレメントのレンダリング結果
 	 */
 	public function getElement($name, $data = array(), $options = array()) {
-		$rtn = $this->processor->bind_template('Elements/'.$name.'.php');
+		$rtn = $this->processor->bind_template('Elements/'.$name.'.php', $data, $options);
 		return $rtn;
 	}
 
@@ -1232,8 +1232,34 @@ EOD;
 		$siteRoot = null;
 		$id = '';
 		$currentId = $this->px->site()->get_current_page_info('id');
+
+		$px2_gmenu = $this->px->site()->get_global_menu();
+		$tree = array();
+		foreach( $px2_gmenu as $px2_pid ){
+			$page_info = $this->px->site()->get_page_info($px2_pid);
+			$row = array();
+			$row['Content'] = array();
+			$row['Content']['id'] = $page_info['id'];
+			$row['Content']['title'] = $page_info['title'];
+			$row['Content']['url'] = $page_info['path'];
+
+			$children = $this->px->site()->get_children($page_info['id']);
+			if( count($children) ){
+				$row['children'] = array();
+				foreach( $children as $child ){
+					$page_info = $this->px->site()->get_page_info($child);
+					$childrow = array();
+					$childrow['Content'] = array();
+					$childrow['Content']['id'] = $page_info['id'];
+					$childrow['Content']['title'] = $page_info['title'];
+					$childrow['Content']['url'] = $page_info['path'];
+					array_push($row['children'], $childrow);
+				}
+			}
+			array_push($tree, $row);
+		}
 		$options = array_merge([
-			'tree' => $this->px->site()->get_global_menu(),
+			'tree' => $tree,
 			'currentId' => $currentId,
 			'data' => []
 		], $options);

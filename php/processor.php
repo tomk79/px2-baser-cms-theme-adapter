@@ -85,16 +85,47 @@ class processor{
 	/**
 	 * 完成したHTMLコードを取得する
 	 * @param string $path_theme_layout_file テーマレイアウトファイルのパス
+	 * @param array $data エレメントで参照するデータ
+	 * @param array $options オプションのパラメータ
+	 *  `subDir` (boolean) エレメントのパスについてプレフィックスによるサブディレクトリを追加するかどうか
+	 * ※ その他のパラメータについては、View::element() を参照
 	 * @return string 完成したHTMLコード
 	 */
-	public function bind_template( $path_theme_layout_file ){
+	public function bind_template( $path_theme_layout_file, $data = array(), $options = array() ){
 		$this->BcBaser = new stubs_BcBaser( $this->px, $this );
 		$this->BcHtml = new stubs_BcHtml($this->px, $this);
 		$this->BcPage = new stubs_BcPage($this->px, $this);
 		$this->BcArray = new stubs_BcArray($this->px, $this);
 
+		$options = array_merge(array(
+			'subDir' => true
+		), $options);
+
+		if (isset($options['plugin']) && !$options['plugin']) {
+			unset($options['plugin']);
+		}
+
+		$file = $plugin = null;
+
+		if (!isset($options['callbacks'])) {
+			$options['callbacks'] = false;
+		}
+
+		extract($data);
+
+		$realpath_layout_file = $this->path_theme_dir.$path_theme_layout_file;
+		if( !is_file($realpath_layout_file) ){
+			$realpath_layout_file = __DIR__.'/../baserCMS/lib/Baser/View/'.$path_theme_layout_file;
+		}
+		if( !is_file($realpath_layout_file) ){
+			$realpath_layout_file = __DIR__.'/../baserCMS/lib/Cake/View/'.$path_theme_layout_file;
+		}
+		if( !is_file($realpath_layout_file) ){
+			return '';
+		}
+
 		ob_start();
-		include( $this->path_theme_dir.$path_theme_layout_file );
+		include( $realpath_layout_file );
 		$finalized_html_code = ob_get_clean();
 
 		return $finalized_html_code;

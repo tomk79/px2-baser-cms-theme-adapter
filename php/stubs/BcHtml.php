@@ -439,7 +439,7 @@ class stubs_BcHtml{
 		$path = $this->px->path_plugin_files('/css/'.$path.'.css');
 		$realpath = $this->px->realpath_plugin_files('/css/'.$original_path_memo.'.css');
 		if( !is_file($realpath) ){
-			$realpath = __DIR__.'/../../cake_default_webroot/css/'.$original_path_memo.'.css';
+			$realpath = __DIR__.'/../../baserCMS/lib/Baser/webroot/css/'.$original_path_memo.'.css';
 			if( is_file($realpath) ){
 				$path = 'data:text/css;base64,'.base64_encode($this->px->fs()->read_file($realpath));
 			}
@@ -517,7 +517,7 @@ class stubs_BcHtml{
 		$url = $this->px->path_plugin_files('/js/'.$url.'.js');
 		$realpath = $this->px->realpath_plugin_files('/js/'.$url.'.js');
 		if( !is_file($realpath) ){
-			$realpath = __DIR__.'/../../cake_default_webroot/js/'.$url.'.js';
+			$realpath = __DIR__.'/../../baserCMS/lib/Baser/webroot/js/'.$url.'.js';
 			if( is_file($realpath) ){
 				$url = 'data:text/javascript;base64,'.base64_encode($this->px->fs()->read_file($realpath));
 			}
@@ -773,7 +773,7 @@ class stubs_BcHtml{
 		$path = $this->px->path_plugin_files('/img/'.$path);
 		$realpath = $this->px->realpath_plugin_files('/img/'.$path);
 		if( !is_file($realpath) ){
-			$realpath = __DIR__.'/../../cake_default_webroot/img/'.$original_path_memo;
+			$realpath = __DIR__.'/../../baserCMS/lib/Baser/webroot/img/'.$original_path_memo;
 			if( is_file($realpath) ){
 				$path = 'data:image/png;base64,'.base64_encode($this->px->fs()->read_file($realpath));
 			}
