@@ -784,9 +784,11 @@ class stubs_BcHtml{
 		if (!isset($options['alt'])) {
 			$options['alt'] = '';
 		}
-
 		if (!isset($options['class'])) {
 			$options['class'] = '';
+		}
+		if (!isset($options['width'])) {
+			$options['width'] = '';
 		}
 
 		$url = false;
@@ -797,6 +799,7 @@ class stubs_BcHtml{
 
 		$image = '<img src="'.htmlspecialchars($path).'" alt="'.htmlspecialchars($options['alt']).'"';
 		$image .= (strlen($options['class']) ? ' class="'.htmlspecialchars($options['class']).'"' : '');
+		$image .= (strlen($options['width']) ? ' width="'.htmlspecialchars($options['width']).'"' : '');
 		$image .= ' />';
 
 		if ($url) {

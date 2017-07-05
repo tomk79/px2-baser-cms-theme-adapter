@@ -11,6 +11,9 @@ class processor{
 	/** Pickles 2 Object */
 	private $px;
 
+	/** Config Object */
+	private $conf;
+
 	/** Stubs */
 	private $BcBaser;
 	private $BcHtml;
@@ -31,12 +34,21 @@ class processor{
 	 * constructor
 	 * @param object $px Pickles 2 Object
 	 */
-	public function __construct( $px, $theme_id, $path_theme_dir ){
+	public function __construct( $px, $conf, $theme_id, $path_theme_dir ){
 		$this->px = $px;
+		$this->conf = $conf;
 		$this->path_theme_dir = $path_theme_dir;
 		$this->theme_id = $theme_id;
 	} // __construct()
 
+
+	/**
+	 * `$conf` を取得する
+	 * @return object `$conf`
+	 */
+	public function get_conf(){
+		return $this->conf;
+	}
 
 	/**
 	 * テーマディレクトリのパスを取得する
