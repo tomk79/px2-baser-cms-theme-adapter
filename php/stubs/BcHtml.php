@@ -444,7 +444,7 @@ class stubs_BcHtml{
 
 		$original_path_memo = $path;
 		$path = $this->px->path_plugin_files('/css/'.$path.'.css');
-		$realpath = $this->px->realpath_plugin_files('/css/'.$path.'.css');
+		$realpath = $this->px->realpath_plugin_files('/css/'.$original_path_memo.'.css');
 		if( !is_file($realpath) ){
 			$realpath = __DIR__.'/../../cake_default_webroot/css/'.$original_path_memo.'.css';
 			if( is_file($realpath) ){
