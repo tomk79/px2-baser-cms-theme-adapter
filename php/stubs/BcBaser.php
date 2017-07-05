@@ -97,6 +97,8 @@ class stubs_BcBaser{
 		$this->siteConfig['version'] = '';
 		$this->siteConfig['use_universal_analytics'] = '';
 		$this->siteConfig['formal_name'] = '';
+		$this->siteConfig['address'] = '';
+		$this->siteConfig['name'] = '';
 
 	} // __construct()
 
@@ -1215,10 +1217,13 @@ EOD;
 		foreach( $px2_gmenu as $px2_pid ){
 			$page_info = $this->px->site()->get_page_info($px2_pid);
 			$row = array();
-			$row['Content'] = array();
+			$row['Content'] = $page_info;
 			$row['Content']['id'] = $page_info['id'];
 			$row['Content']['title'] = $page_info['title'];
 			$row['Content']['url'] = $page_info['path'];
+			if( !array_key_exists('name', $row['Content']) ){
+				$row['Content']['name'] = $page_info['id'];
+			}
 
 			$children = $this->px->site()->get_children($page_info['id']);
 			if( count($children) ){
@@ -1226,10 +1231,13 @@ EOD;
 				foreach( $children as $child ){
 					$page_info = $this->px->site()->get_page_info($child);
 					$childrow = array();
-					$childrow['Content'] = array();
+					$childrow['Content'] = $page_info;
 					$childrow['Content']['id'] = $page_info['id'];
 					$childrow['Content']['title'] = $page_info['title'];
 					$childrow['Content']['url'] = $page_info['path'];
+					if( !array_key_exists('name', $childrow['Content']) ){
+						$childrow['Content']['name'] = $page_info['id'];
+					}
 					array_push($row['children'], $childrow);
 				}
 			}

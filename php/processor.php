@@ -22,6 +22,7 @@ class processor{
 	private $BcXml;
 	private $BcContents;
 	private $BcForm;
+	private $BcGooglemaps;
 
 	/** Theme ID */
 	private $theme_id;
@@ -114,6 +115,7 @@ class processor{
 		$this->BcXml = new stubs_BcXml($this->px, $this);
 		$this->BcContents = new stubs_BcContents($this->px, $this);
 		$this->BcForm = new stubs_BcForm($this->px, $this);
+		$this->BcGooglemaps = new stubs_BcGooglemaps($this->px, $this);
 
 		$options = array_merge(array(
 			'subDir' => true

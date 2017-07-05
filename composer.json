@@ -42,6 +42,7 @@
             "php/stubs/BcXml.php",
             "php/stubs/BcForm.php",
             "php/stubs/BcContents.php",
+            "php/stubs/BcGooglemaps.php",
             "php/stubs/Configure.php",
             "php/stubs/Hash.php",
             "php/utils/funcs.php"
