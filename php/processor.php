@@ -19,6 +19,9 @@ class processor{
 	private $BcHtml;
 	private $BcPage;
 	private $BcArray;
+	private $BcXml;
+	private $BcContents;
+	private $BcForm;
 
 	/** Theme ID */
 	private $theme_id;
@@ -108,6 +111,9 @@ class processor{
 		$this->BcHtml = new stubs_BcHtml($this->px, $this);
 		$this->BcPage = new stubs_BcPage($this->px, $this);
 		$this->BcArray = new stubs_BcArray($this->px, $this);
+		$this->BcXml = new stubs_BcXml($this->px, $this);
+		$this->BcContents = new stubs_BcContents($this->px, $this);
+		$this->BcForm = new stubs_BcForm($this->px, $this);
 
 		$options = array_merge(array(
 			'subDir' => true

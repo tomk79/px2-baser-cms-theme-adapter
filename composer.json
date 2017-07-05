@@ -39,6 +39,11 @@
             "php/stubs/BcArray.php",
             "php/stubs/BcHtml.php",
             "php/stubs/BcPage.php",
+            "php/stubs/BcXml.php",
+            "php/stubs/BcForm.php",
+            "php/stubs/BcContents.php",
+            "php/stubs/Configure.php",
+            "php/stubs/Hash.php",
             "php/utils/funcs.php"
         ]
     },

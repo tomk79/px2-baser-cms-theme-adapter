@@ -123,6 +123,64 @@ class stubs_BcHtml{
 	);
 
 
+/**
+ * Minimized attributes
+ *
+ * @var array
+ */
+	protected $_minimizedAttributes = array(
+		'allowfullscreen',
+		'async',
+		'autofocus',
+		'autoplay',
+		'checked',
+		'compact',
+		'controls',
+		'declare',
+		'default',
+		'defaultchecked',
+		'defaultmuted',
+		'defaultselected',
+		'defer',
+		'disabled',
+		'enabled',
+		'formnovalidate',
+		'hidden',
+		'indeterminate',
+		'inert',
+		'ismap',
+		'itemscope',
+		'loop',
+		'multiple',
+		'muted',
+		'nohref',
+		'noresize',
+		'noshade',
+		'novalidate',
+		'nowrap',
+		'open',
+		'pauseonexit',
+		'readonly',
+		'required',
+		'reversed',
+		'scoped',
+		'seamless',
+		'selected',
+		'sortable',
+		'spellcheck',
+		'truespeed',
+		'typemustmatch',
+		'visible'
+	);
+
+/**
+ * Format to attribute
+ *
+ * @var string
+ */
+	protected $_attributeFormat = '%s="%s"';
+
+
 	/**
 	 * constructor
 	 *
@@ -1288,6 +1346,83 @@ class stubs_BcHtml{
 			$this->_minimizedAttributeFormat = $configs['minimizedAttributeFormat'];
 		}
 		return $configs;
+	}
+
+/**
+ * Formats an individual attribute, and returns the string value of the composed attribute.
+ * Works with minimized attributes that have the same value as their name such as 'disabled' and 'checked'
+ *
+ * @param string $key The name of the attribute to create
+ * @param string $value The value of the attribute to create.
+ * @param bool $escape Define if the value must be escaped
+ * @return string The composed attribute.
+ * @deprecated 3.0.0 This method will be moved to HtmlHelper in 3.0
+ */
+	protected function _formatAttribute($key, $value, $escape = true) {
+		if (is_array($value)) {
+			$value = implode(' ', $value);
+		}
+		if (is_numeric($key)) {
+			return sprintf($this->_minimizedAttributeFormat, $value, $value);
+		}
+		$truthy = array(1, '1', true, 'true', $key);
+		$isMinimized = in_array($key, $this->_minimizedAttributes);
+		if ($isMinimized && in_array($value, $truthy, true)) {
+			return sprintf($this->_minimizedAttributeFormat, $key, $key);
+		}
+		if ($isMinimized) {
+			return '';
+		}
+		return sprintf($this->_attributeFormat, $key, ($escape ? h($value) : $value));
+	}
+
+/**
+ * Generate URL for given asset file. Depending on options passed provides full URL with domain name.
+ * Also calls Helper::assetTimestamp() to add timestamp to local files
+ *
+ * @param string|array $path Path string or URL array
+ * @param array $options Options array. Possible keys:
+ *   `fullBase` Return full URL with domain name
+ *   `pathPrefix` Path prefix for relative URLs
+ *   `ext` Asset extension to append
+ *   `plugin` False value will prevent parsing path as a plugin
+ * @return string Generated URL
+ */
+	public function assetUrl($path, $options = array()) {
+		// var_dump($path, $options);
+		// TODO: 言い換えはこれでよいか？
+		return $this->px->href($path);
+
+		if (is_array($path)) {
+			return $this->url($path, !empty($options['fullBase']));
+		}
+		if (strpos($path, '://') !== false) {
+			return $path;
+		}
+		if (!array_key_exists('plugin', $options) || $options['plugin'] !== false) {
+			list($plugin, $path) = $this->_View->pluginSplit($path, false);
+		}
+		if (!empty($options['pathPrefix']) && $path[0] !== '/') {
+			$path = $options['pathPrefix'] . $path;
+		}
+		if (!empty($options['ext']) &&
+			strpos($path, '?') === false &&
+			substr($path, -strlen($options['ext'])) !== $options['ext']
+		) {
+			$path .= $options['ext'];
+		}
+		if (preg_match('|^([a-z0-9]+:)?//|', $path)) {
+			return $path;
+		}
+		if (isset($plugin)) {
+			$path = Inflector::underscore($plugin) . '/' . $path;
+		}
+		$path = $this->_encodeUrl($this->assetTimestamp($this->webroot($path)));
+
+		if (!empty($options['fullBase'])) {
+			$path = rtrim(Router::fullBaseUrl(), '/') . '/' . ltrim($path, '/');
+		}
+		return $path;
 	}
 
 }

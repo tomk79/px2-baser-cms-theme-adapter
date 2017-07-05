@@ -17,6 +17,7 @@ class stubs_BcBaser{
 	/** Stubs */
 	private $BcHtml;
 	private $BcPage;
+	private $BcXml;
 
 /**
  * サイト基本設定データ
@@ -83,8 +84,9 @@ class stubs_BcBaser{
 	public function __construct( $px, $processor ){
 		$this->px = $px;
 		$this->processor = $processor;
-		$this->BcHtml = new stubs_BcHtml($px);
-		$this->BcPage = new stubs_BcPage($px);
+		$this->BcHtml = new stubs_BcHtml($px, $processor);
+		$this->BcPage = new stubs_BcPage($px, $processor);
+		$this->BcXml = new stubs_BcXml($px, $processor);
 
 		$this->siteConfig = array();
 		$this->siteConfig['theme'] = $processor->get_theme_id();
@@ -166,17 +168,7 @@ class stubs_BcBaser{
  * @return string meta タグ用のキーワード
  */
 	public function getKeywords() {
-		$keywords = $this->_View->get('keywords');
-
-		if (!empty($keywords)) {
-			return $keywords;
-		}
-
-		if(!empty($this->siteConfig['keyword'])) {
-			return $this->siteConfig['keyword'];
-		}
-
-		return '';
+		return $this->px->site()->get_current_page_info('keywords');
 	}
 
 /**
@@ -185,17 +177,7 @@ class stubs_BcBaser{
  * @return string meta タグ用の説明文
  */
 	public function getDescription() {
-		$description = $this->_View->get('description');
-
-		if (!empty($description)) {
-			return $description;
-		}
-
-		if(!empty($this->siteConfig['description'])) {
-			return $this->siteConfig['description'];
-		}
-
-		return '';
+		return $this->px->site()->get_current_page_info('description');
 	}
 
 	/**
