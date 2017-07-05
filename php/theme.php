@@ -156,7 +156,7 @@ class theme{
 			$path_theme_layout_file = $this->px->fs()->get_realpath( $this->path_theme_dir.'Layouts/default.php' );
 		}
 
-		$processor = new processor( $this->px, $this->path_theme_dir);
+		$processor = new processor( $this->px, $this->theme_id, $this->path_theme_dir);
 		return $processor->bind_template('Layouts/'.$this->page['layout'].'.php');
 	}
 

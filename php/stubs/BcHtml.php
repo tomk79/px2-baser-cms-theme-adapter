@@ -371,7 +371,7 @@ class stubs_BcHtml{
 			$options['onclick'] .= 'event.returnValue = false; return false;';
 			unset($options['default']);
 		}
-		$link = '<a href="'.htmlspecialchars($url).'">'.htmlspecialchars($title).'</a>';
+		$link = '<a href="'.htmlspecialchars($url).'">'.$title.'</a>';
 		return $link;
 	}
 
