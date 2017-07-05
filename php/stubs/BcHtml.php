@@ -442,7 +442,16 @@ class stubs_BcHtml{
 			return '';
 		}
 
+		$original_path_memo = $path;
 		$path = $this->px->path_plugin_files('/css/'.$path.'.css');
+		$realpath = $this->px->realpath_plugin_files('/css/'.$path.'.css');
+		if( !is_file($realpath) ){
+			$realpath = __DIR__.'/../../cake_default_webroot/css/'.$original_path_memo.'.css';
+			if( is_file($realpath) ){
+				$path = 'data:text/css;base64,'.base64_encode($this->px->fs()->read_file($realpath));
+			}
+		}
+		unset($original_path_memo);
 		$link_tag = '<link rel="'.htmlspecialchars($options['rel']).'" href="'.htmlspecialchars($path).'" />'."\n";
 		// var_dump($link_tag);
 		echo $link_tag;
@@ -512,7 +521,14 @@ class stubs_BcHtml{
 			return null;
 		}
 
-		$url = $this->px->path_plugin_files('/js/'.$url.'.css');
+		$url = $this->px->path_plugin_files('/js/'.$url.'.js');
+		$realpath = $this->px->realpath_plugin_files('/js/'.$url.'.js');
+		if( !is_file($realpath) ){
+			$realpath = __DIR__.'/../../cake_default_webroot/js/'.$url.'.js';
+			if( is_file($realpath) ){
+				$url = 'data:text/javascript;base64,'.base64_encode($this->px->fs()->read_file($realpath));
+			}
+		}
 		$link_tag = '<script src="'.htmlspecialchars($url).'"></script>'."\n";
 		// var_dump($link_tag);
 		echo $link_tag;
@@ -760,7 +776,16 @@ class stubs_BcHtml{
  * @link http://book.cakephp.org/2.0/en/core-libraries/helpers/html.html#HtmlHelper::image
  */
 	public function image($path, $options = array()) {
+		$original_path_memo = $path;
 		$path = $this->px->path_plugin_files('/img/'.$path);
+		$realpath = $this->px->realpath_plugin_files('/img/'.$path);
+		if( !is_file($realpath) ){
+			$realpath = __DIR__.'/../../cake_default_webroot/img/'.$original_path_memo;
+			if( is_file($realpath) ){
+				$path = 'data:image/png;base64,'.base64_encode($this->px->fs()->read_file($realpath));
+			}
+		}
+		unset($original_path_memo);
 		$options = array_diff_key($options, array('fullBase' => null, 'pathPrefix' => null));
 
 		if (!isset($options['alt'])) {
