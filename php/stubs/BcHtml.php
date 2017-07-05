@@ -139,13 +139,6 @@ class stubs_BcHtml{
 		return $this->px->href($url);
 	}
 
-	// /**
-	//  * TODO: 画像を生成する
-	//  */
-	// public function image(){
-	// 	return;
-	// }
-
 	/**
 	 * パンくず配列を取得
 	 * @return [type] [description]
@@ -792,13 +785,19 @@ class stubs_BcHtml{
 			$options['alt'] = '';
 		}
 
+		if (!isset($options['class'])) {
+			$options['class'] = '';
+		}
+
 		$url = false;
 		if (!empty($options['url'])) {
 			$url = $options['url'];
 			unset($options['url']);
 		}
 
-		$image = '<img src="'.htmlspecialchars($path).'" alt="" />';
+		$image = '<img src="'.htmlspecialchars($path).'" alt="'.htmlspecialchars($options['alt']).'"';
+		$image .= (strlen($options['class']) ? ' class="'.htmlspecialchars($options['class']).'"' : '');
+		$image .= ' />';
 
 		if ($url) {
 			return sprintf($this->_tags['link'], $this->url($url), null, $image);
