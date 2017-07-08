@@ -1643,8 +1643,8 @@ END_FLASH;
 
 		$url = $imgPath = $uploadUrl = $uploadThumbUrl = $originUrl = '';
 		$thumbSuffix = '_thumb';
-		$dir = $this->px->path_plugin_files('/img/');
-		$themeDir = $path = $this->px->realpath_plugin_files('/img/');
+		$dir = $this->px->path_plugin_files('/'.urlencode($this->processor->get_theme_id()).'/img/');
+		$themeDir = $path = $this->px->realpath_plugin_files('/'.urlencode($this->processor->get_theme_id()).'/img/');
 		$num = '';
 		if (!empty($options['num'])) {
 			$num = '_' . $options['num'];

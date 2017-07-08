@@ -94,7 +94,7 @@ class theme{
 			if( is_dir($this->path_theme_dir.'/'.$resource_dir_name.'/') ){
 				$this->px->fs()->copy_r(
 					$this->path_theme_dir.'/'.$resource_dir_name.'/' ,
-					$this->px->realpath_plugin_files('/'.$resource_dir_name.'/')
+					$this->px->realpath_plugin_files('/'.urlencode($this->theme_id).'/'.$resource_dir_name.'/')
 				);
 			}
 		}
@@ -123,8 +123,6 @@ class theme{
 				if( $this->px->fs()->is_dir( $this->conf->path_theme_collection.'/'.$param_theme_id.'/' ) || $this->px->fs()->is_dir( $this->get_composer_root_dir().'/vendor/'.$param_theme_id.'/theme/' ) ){
 					// テーマが実在していたら
 
-					$plugin_cache_dir = $this->px->realpath_plugin_files('/');
-					$this->px->fs()->rm( $plugin_cache_dir );// ← テーマを切り替える際に、公開キャッシュを一旦削除する
 					$this->theme_id = $param_theme_id;
 					$this->px->req()->set_cookie( $this->cookie_theme_switch, $this->theme_id );
 

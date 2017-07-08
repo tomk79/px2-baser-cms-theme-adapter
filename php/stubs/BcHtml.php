@@ -11,6 +11,9 @@ class stubs_BcHtml{
 	/** Pickles 2 Object */
 	private $px = '';
 
+	/** class `processor` Instance */
+	private $processor;
+
 /**
  * Reference to the Response object
  *
@@ -186,8 +189,9 @@ class stubs_BcHtml{
 	 *
 	 * @param object $px Pickles 2 Object
 	 */
-	public function __construct( $px ){
+	public function __construct( $px, $processor ){
 		$this->px = $px;
+		$this->processor = $processor;
 	} // __construct()
 
 	/**
@@ -494,8 +498,8 @@ class stubs_BcHtml{
 		}
 
 		$original_path_memo = $path;
-		$path = $this->px->path_plugin_files('/css/'.$path.'.css');
-		$realpath = $this->px->realpath_plugin_files('/css/'.$original_path_memo.'.css');
+		$path = $this->px->path_plugin_files('/'.urlencode($this->processor->get_theme_id()).'/css/'.$path.'.css');
+		$realpath = $this->px->realpath_plugin_files('/'.urlencode($this->processor->get_theme_id()).'/css/'.$original_path_memo.'.css');
 		if( !is_file($realpath) ){
 			$realpath = __DIR__.'/../../baserCMS/lib/Baser/webroot/css/'.$original_path_memo.'.css';
 			if( is_file($realpath) ){
@@ -572,8 +576,8 @@ class stubs_BcHtml{
 			return null;
 		}
 
-		$url = $this->px->path_plugin_files('/js/'.$url.'.js');
-		$realpath = $this->px->realpath_plugin_files('/js/'.$url.'.js');
+		$url = $this->px->path_plugin_files('/'.urlencode($this->processor->get_theme_id()).'/js/'.$url.'.js');
+		$realpath = $this->px->realpath_plugin_files('/'.urlencode($this->processor->get_theme_id()).'/js/'.$url.'.js');
 		if( !is_file($realpath) ){
 			$realpath = __DIR__.'/../../baserCMS/lib/Baser/webroot/js/'.$url.'.js';
 			if( is_file($realpath) ){
@@ -828,8 +832,8 @@ class stubs_BcHtml{
  */
 	public function image($path, $options = array()) {
 		$original_path_memo = $path;
-		$path = $this->px->path_plugin_files('/img/'.$path);
-		$realpath = $this->px->realpath_plugin_files('/img/'.$path);
+		$path = $this->px->path_plugin_files('/'.urlencode($this->processor->get_theme_id()).'/img/'.$path);
+		$realpath = $this->px->realpath_plugin_files('/'.urlencode($this->processor->get_theme_id()).'/img/'.$path);
 		if( !is_file($realpath) ){
 			$realpath = __DIR__.'/../../baserCMS/lib/Baser/webroot/img/'.$original_path_memo;
 			if( is_file($realpath) ){
