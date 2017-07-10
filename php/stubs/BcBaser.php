@@ -488,7 +488,7 @@ class stubs_BcBaser{
 		// echo '<h1>'.preg_replace('/\r\n|\r|\n/s', '<br />', htmlspecialchars($this->px->site()->get_current_page_info('title_h1')) ).'</h1>'."\n";
 
 		?>
-<div <?= htmlspecialchars( $attr_bowl_name_by )?>="main">
+<div class="contents" <?= htmlspecialchars( $attr_bowl_name_by )?>="main">
 <?= $this->px->bowl()->get_clean() ?>
 </div>
 		<?php

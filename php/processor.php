@@ -148,6 +148,9 @@ class processor{
 		include( $realpath_layout_file );
 		$finalized_html_code = ob_get_clean();
 
+		$finalized_html_code = preg_replace('/(<\/head>)/i', $this->px->get_contents_manifesto().$this->px->bowl()->get_clean('head').'$1', $finalized_html_code);
+		$finalized_html_code = preg_replace('/(<\/body>)/i', $this->px->bowl()->get_clean('foot').'$1', $finalized_html_code);
+
 		return $finalized_html_code;
 	}
 
