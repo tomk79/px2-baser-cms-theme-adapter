@@ -485,7 +485,9 @@ class stubs_BcBaser{
 	public function content() {
 		$attr_bowl_name_by = $this->processor->get_conf()->attr_bowl_name_by;
 
-		// echo '<h1>'.preg_replace('/\r\n|\r|\n/s', '<br />', htmlspecialchars($this->px->site()->get_current_page_info('title_h1')) ).'</h1>'."\n";
+		if( $this->processor->get_conf()->h1 == 'supply' ){
+			echo '<h1>'.preg_replace('/\r\n|\r|\n/s', '<br />', htmlspecialchars($this->px->site()->get_current_page_info('title_h1')) ).'</h1>'."\n";
+		}
 
 		?>
 <div class="contents" <?= htmlspecialchars( $attr_bowl_name_by )?>="main">

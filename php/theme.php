@@ -73,6 +73,14 @@ class theme{
 		// var_dump($this->theme_options);
 
 
+		// h1 の処理 の設定
+		$this->conf->h1 = 'supply';
+			// 'supply' -> h1 を付加する
+			// 'pass' -> 付加しない
+		if( strlen(@$options->h1) ){
+			$this->conf->h1 = $options->h1;
+		}
+
 		// サイトマップからページ情報を取得
 		$this->page = $this->px->site()->get_current_page_info();
 		if( @!strlen( $this->page['layout'] ) ){
